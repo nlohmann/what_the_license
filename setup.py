@@ -6,7 +6,7 @@ def readme():
 
 setup(name='what_the_license',
       version='0.1',
-      description='Returns the content of a jar file\'s MANIFEST as dict.',
+      description='A tool to find the concrete open source license given a source file header.',
       long_description=readme(),
       classifiers=[
       	'Development Status :: 4 - Beta',
