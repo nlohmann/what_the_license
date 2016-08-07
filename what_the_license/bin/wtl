@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+
+import json
+import sys
+import what_the_license
+
+res = what_the_license.wtl(open(sys.argv[1]))
+print json.dumps(res, indent=2)

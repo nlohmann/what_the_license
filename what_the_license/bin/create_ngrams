@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+from collections import Counter
+import re
+import glob
+import json
+
+def normalize(s):
+	return re.sub(r'[^a-z0-9]+', ' ', s.lower()).strip()
+
+# from http://locallyoptimal.com/blog/2013/01/20/elegant-n-gram-generation-in-python/
+def find_ngrams(input_list, n):
+	ngrams = zip(*[input_list[i:] for i in range(n)])
+	return ["-".join(ngram) for ngram in ngrams]
+
+local_dict = {}
+
+# process license texts
+for license_file in glob.glob('licenses/*'):
+	license = normalize(open(license_file).read())
+
+	# a counter for the local ngrams
+	local_ngrams = Counter()
+
+	# count ngrams
+	for ngram in find_ngrams(license.split(' '), 3):
+		local_ngrams[ngram] += 1
+
+	local_dict[license_file.replace('licenses/','')] = {
+		'top': [x[0] for x in local_ngrams.most_common(100)]
+	}
+
+# process license names
+for license_file, details in json.load(open('licenses.json')).iteritems():
+	name = details.get('title', details.get('name', ''))
+	local_dict[license_file]['name'] = find_ngrams(normalize(name).split(' '), 3)
+
+# write ngrams to file
+json.dump(local_dict, open('ngrams.json', 'w'), indent=2)
